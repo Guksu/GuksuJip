@@ -17,7 +17,7 @@ export function MenuBoard({ onOrder }: MenuBoardProps) {
         </span>
         <h1 className={styles.title}>국수집 차림표</h1>
         <p className={styles.lede}>
-          {owner.name}가 만든 것들을 걸어 두었어요. 메뉴를 고르면 한 그릇 내어 드릴게요.
+          {owner.handle}가 만든 것들을 걸어 두었어요. 메뉴를 고르면 한 그릇 내어 드릴게요.
         </p>
       </header>
 
@@ -47,7 +47,9 @@ export function MenuBoard({ onOrder }: MenuBoardProps) {
         <dl className={styles.info}>
           <div className={styles.row}>
             <dt>주인장</dt>
-            <dd>{owner.name}</dd>
+            <dd>
+              {owner.name} ({owner.handle})
+            </dd>
           </div>
           <div className={styles.row}>
             <dt>소개</dt>
