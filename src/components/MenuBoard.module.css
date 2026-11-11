@@ -1,0 +1,155 @@
+.wall {
+  min-height: 100dvh;
+  padding: var(--space-12) var(--page-inline) calc(var(--space-12) + env(safe-area-inset-bottom));
+  /* 벽 — 위에서 들어오는 빛과 옅은 얼룩 */
+  background:
+    radial-gradient(120% 60% at 20% 0%, rgb(255 255 255 / 0.55), transparent 60%),
+    radial-gradient(80% 50% at 90% 100%, rgb(160 120 70 / 0.1), transparent 70%), var(--color-wall);
+}
+
+.sign,
+.board,
+.shop {
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+/* 간판 */
+.sign {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-4);
+  row-gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-12);
+}
+
+/* 낙관 도장 */
+.stamp {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-control);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  line-height: 1;
+  transform: rotate(-4deg);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-regular);
+}
+
+.lede {
+  grid-column: 1 / -1;
+  max-width: 34em;
+  color: var(--color-text-secondary);
+}
+
+/* 차림표 */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-12) var(--space-12);
+}
+
+.category {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.categoryTitle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  /* 팻말을 거는 가로대 */
+  border-bottom: 3px solid var(--wood-table);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+}
+
+.count {
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.planks {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* 가게 정보 */
+.shop {
+  margin-top: var(--space-16);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-line);
+}
+
+.shopTitle {
+  margin-bottom: var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+}
+
+.info {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.row dt {
+  color: var(--color-text-secondary);
+}
+
+.row dd {
+  margin: 0;
+}
+
+.link {
+  display: inline-block;
+  /* 누르는 영역을 위아래로 넓힌다 */
+  margin-block: calc(var(--space-3) * -1);
+  padding-block: var(--space-3);
+  color: var(--color-accent-text);
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 900px) {
+  .title {
+    font-size: 56px;
+  }
+
+  .stamp {
+    width: 64px;
+    height: 64px;
+    font-size: var(--text-title);
+  }
+
+  /* 넓은 화면에서는 두 줄로 건다: 왼쪽에 AI 도구·라이브러리, 오른쪽에 웹·앱 */
+  .board {
+    display: block;
+    columns: 2;
+    column-gap: var(--space-12);
+  }
+
+  .category {
+    break-inside: avoid;
+    margin-bottom: var(--space-12);
+  }
+}
