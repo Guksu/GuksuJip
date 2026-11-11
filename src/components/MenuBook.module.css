@@ -1,0 +1,268 @@
+/* 차림표 한 권. 크기(--page-w, --page-h)는 상(Home)에서 정한다. */
+.book {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--page-w);
+  height: var(--page-h);
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  transition: transform 600ms var(--motion-ease-drawer);
+}
+
+/* 펼치면 책이 왼쪽으로 비켜나 오른쪽에 상 차릴 자리를 낸다 */
+.book[data-open='true'] {
+  transform: translate(calc(-50% - 25vw + var(--page-w) / 2), -50%);
+}
+
+/* 종이 한 면 */
+.leaf {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: 0 22px 34px -18px rgb(60 35 10 / 0.6);
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: var(--weight-regular);
+  outline: none;
+}
+
+/* ── 차림표 면 ── */
+.group {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.groupTitle {
+  padding-bottom: var(--space-1);
+  border-bottom: 2px solid var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(12px, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* 이름과 종류를 잇는 점선 */
+.dots {
+  border-bottom: 2px dotted #a89a84;
+  transform: translateY(-4px);
+}
+
+.kind,
+.tasted {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.tasted {
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent-text);
+}
+
+.row[aria-current='true'] .name {
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent-text);
+}
+
+.row[aria-current='true'] .dots {
+  border-color: var(--color-accent);
+}
+
+/* ── 표지 — 왼쪽 모서리를 축으로 넘어간다 ── */
+.cover {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 700ms var(--motion-ease-drawer);
+}
+
+.book[data-open='true'] .cover {
+  transform: rotateY(-180deg);
+}
+
+.front,
+.inside {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+.coverButton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto auto;
+  justify-items: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-8) var(--space-6);
+  border: 0;
+  /* 책등 쪽 그늘 */
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.16), transparent 7%), var(--color-cover);
+  color: var(--color-on-cover);
+  box-shadow: 0 26px 36px -18px rgb(60 35 10 / 0.7);
+  cursor: pointer;
+  transition: transform var(--motion-duration-base) var(--motion-ease-out);
+}
+
+.coverButton:focus-visible {
+  outline-color: var(--color-text);
+}
+
+.coverSeal {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid currentcolor;
+  border-radius: var(--radius-control);
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  line-height: 1;
+}
+
+.coverTitle {
+  align-self: center;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display);
+  font-size: clamp(64px, 6vw, 88px);
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+.coverSub {
+  padding: var(--space-1) var(--space-3);
+  border: 2px solid currentcolor;
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  letter-spacing: 0.4em;
+  /* 자간 때문에 오른쪽으로 쏠린 글자를 가운데로 */
+  text-indent: 0.4em;
+}
+
+.coverOwner {
+  margin-top: var(--space-4);
+  font-size: var(--text-small);
+}
+
+@media (hover: hover) {
+  .book[data-open='false'] .coverButton:hover {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+}
+
+.book[data-open='false'] .coverButton:active {
+  transform: scale(0.98);
+}
+
+/* ── 표지 안쪽 면 ── */
+.inside {
+  transform: rotateY(180deg);
+  /* 책등 쪽 그늘 */
+  background: linear-gradient(270deg, rgb(120 90 50 / 0.14), transparent 9%), var(--color-surface);
+}
+
+.inside p {
+  color: var(--color-text-secondary);
+}
+
+.info {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  font-size: var(--text-small);
+}
+
+.info dt {
+  color: var(--color-text-secondary);
+}
+
+.info dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.info a {
+  display: inline-block;
+  /* 누르는 영역을 위아래로 넓힌다 */
+  margin-block: calc(var(--space-3) * -1);
+  padding-block: var(--space-3);
+  color: var(--color-accent-text);
+  text-underline-offset: 3px;
+}
+
+/* ── 좁은 화면 ──
+   책을 펼칠 자리가 없어서, 펼친 뒤에는 차림표 → 상 → 인사말 순서로 한 줄로 놓는다. */
+@media (max-width: 899px) {
+  /* 덮여 있을 때는 표지가 차림표 면보다 작아서, 면이 표지 밖으로 비치지 않게 숨긴다 */
+  .book[data-open='false'] .menuPage {
+    visibility: hidden;
+  }
+
+  .book[data-open='true'],
+  .book[data-open='true'] .cover {
+    display: contents;
+  }
+
+  .book[data-open='true'] .front {
+    display: none;
+  }
+
+  .book[data-open='true'] .leaf {
+    position: static;
+    height: auto;
+    transform: none;
+    box-shadow: 0 14px 24px -16px rgb(60 35 10 / 0.6);
+  }
+
+  .book[data-open='true'] .menuPage {
+    order: 1;
+  }
+
+  .book[data-open='true'] .inside {
+    order: 3;
+    background: var(--color-surface);
+  }
+
+  .row {
+    min-height: var(--tap-min);
+    font-size: var(--text-body);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book,
+  .cover,
+  .coverButton {
+    transition: none;
+  }
+
+  .book[data-open='false'] .coverButton:hover,
+  .book[data-open='false'] .coverButton:active {
+    transform: none;
+  }
+}

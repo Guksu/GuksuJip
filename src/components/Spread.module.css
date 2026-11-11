@@ -1,0 +1,202 @@
+/* 차려진 상 — 넓은 화면에서는 책 오른쪽 절반, 좁은 화면에서는 차림표 아래 */
+.spread {
+  position: absolute;
+  inset: 0 0 0 50%;
+  container-type: size;
+}
+
+/* 넓은 화면에서는 상이 눈에 보이므로 제목은 읽어 주기만 한다 */
+.title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.empty {
+  position: absolute;
+  inset: 46% 0 auto;
+  text-align: center;
+  color: var(--oak-ink-soft);
+}
+
+.place,
+.ghost {
+  position: absolute;
+  width: 16cqmin;
+  translate: -50% -50%;
+}
+
+.served {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: none;
+  cursor: pointer;
+  transition: transform var(--motion-duration-base) var(--motion-ease-out);
+}
+
+.bowl {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 10px 8px rgb(60 35 10 / 0.4));
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  line-height: 1.15;
+  white-space: nowrap;
+  color: var(--oak-ink);
+}
+
+/* 가리키고 있는 그릇은 살짝 들어 올린다 */
+.served[data-active='true'] {
+  transform: scale(1.08);
+}
+
+.served:active {
+  transform: scale(0.97);
+}
+
+/* 아직 주문하지 않은 메뉴는 놓일 자리에 흐리게 비친다 */
+.ghost {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* 계산서 — 상 구석에 놓인 쪽지 */
+.check {
+  position: absolute;
+  right: 7%;
+  bottom: 7%;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border: 0;
+  background: var(--color-surface);
+  box-shadow: 0 16px 24px -14px rgb(40 20 5 / 0.55);
+  text-align: left;
+  cursor: pointer;
+  rotate: 2deg;
+  transition: transform var(--motion-duration-fast) var(--motion-ease-out);
+}
+
+.checkTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  line-height: var(--leading-tight);
+}
+
+.checkCount {
+  justify-self: end;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.checkGo {
+  grid-column: 1 / -1;
+  padding-top: var(--space-2);
+  border-top: 1px dashed #b9b2a4;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  color: var(--color-accent-text);
+}
+
+@media (hover: hover) {
+  .check:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.check:active {
+  transform: scale(0.97);
+}
+
+/* ── 좁은 화면: 그릇을 세 줄 격자로 놓는다 ── */
+@media (max-width: 899px) {
+  /* 차림표를 펼치기 전에는 상을 보여 주지 않는다 */
+  .spread[data-open='false'] {
+    display: none;
+  }
+
+  .spread {
+    position: static;
+    order: 2;
+    display: grid;
+    gap: var(--space-4);
+    container-type: normal;
+  }
+
+  .title {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+    font-family: var(--font-display);
+    font-size: var(--text-heading);
+    font-weight: var(--weight-regular);
+    color: var(--oak-ink);
+  }
+
+  .count {
+    font-family: var(--font-sans);
+    font-size: var(--text-small);
+    color: var(--oak-ink-soft);
+  }
+
+  .empty {
+    position: static;
+    padding-block: var(--space-6);
+  }
+
+  .bowls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-3);
+  }
+
+  /* 자리 좌표(left·top)는 넓은 화면용이라 여기서는 쓰지 않는다 */
+  .place {
+    position: static;
+    width: auto;
+    translate: none;
+  }
+
+  .tag {
+    font-size: var(--text-body);
+    white-space: normal;
+    text-align: center;
+  }
+
+  .ghost {
+    display: none;
+  }
+
+  .check {
+    position: static;
+    justify-self: end;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .served,
+  .check {
+    transition: none;
+  }
+
+  .served[data-active='true'],
+  .served:active,
+  .check:hover,
+  .check:active {
+    transform: none;
+  }
+}

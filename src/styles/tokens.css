@@ -47,15 +47,15 @@
   --color-text-secondary: #525252;
   --color-line: #e3dccd;
   --color-surface: #fffdf9; /* 종이 */
-  --color-wall: #f1eadd; /* 벽 */
+  --color-cover: #c93a26; /* 차림표 표지 — 강조색을 조금 눌러 흰 글자가 4.5:1을 넘게 */
+  --color-on-cover: #fff6e9;
 
-  /* 장면에 쓰는 나무·먹 색(그림의 색) */
-  --wood-pale: #ead7b4;
-  --wood-pale-edge: #c9ad7c;
-  --wood-ink: #24190f;
-  --wood-red: #a82515; /* 옅은 나무 위에서 4.5:1을 넘는 붉은 글씨 */
-  --wood-table: #7a5433;
-  --wood-table-dark: #5f3f25;
+  /* 상(원목)과 그 위에 쓰는 글자 색 — 장면의 색 */
+  --oak: #d8bc8e;
+  --oak-dark: #c4a573;
+  --oak-ink: #24190f; /* 상 위에 바로 쓰는 글자 */
+  --oak-ink-soft: #4a3520;
+  --stick: #2c1d12; /* 젓가락 */
 
   /* 모션 */
   --motion-duration-instant: 100ms;
@@ -63,7 +63,7 @@
   --motion-duration-base: 250ms;
   --motion-duration-slow: 350ms;
   --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --motion-ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --motion-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* 책장·그릇처럼 큰 것이 길게 감속할 때 */
 }
 
 @media (min-width: 768px) {

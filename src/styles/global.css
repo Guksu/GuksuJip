@@ -10,7 +10,18 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-wall);
+  /* 원목 상판 — 널 사이의 틈과 결. 모든 화면이 이 상 위에서 벌어진다 */
+  background:
+    repeating-linear-gradient(90deg, transparent 0 178px, rgb(90 60 25 / 0.22) 178px 180px),
+    repeating-linear-gradient(
+      91deg,
+      transparent 0 23px,
+      rgb(255 255 255 / 0.06) 23px 25px,
+      transparent 25px 57px,
+      rgb(90 60 25 / 0.06) 57px 59px
+    ),
+    linear-gradient(180deg, var(--oak) 0%, var(--oak-dark) 100%);
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--text-body);
@@ -18,11 +29,6 @@ body {
   word-break: keep-all;
   overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
-}
-
-/* 소개 화면이 열려 있는 동안 뒤의 차림표가 스크롤되지 않게 한다 */
-html[data-scene-open] {
-  overflow: hidden;
 }
 
 h1,
@@ -63,4 +69,34 @@ button {
 :focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+/* 화면을 보지 못하는 사람에게만 읽어 주는 글 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 화면 전환 — 고른 그릇이 다음 화면의 그릇으로 자리를 옮기듯 이어진다 */
+::view-transition-group(bowl) {
+  animation-duration: 520ms;
+  animation-timing-function: var(--motion-ease-drawer);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+}
+
+/* 동작 줄이기를 켠 경우에는 전환 없이 바로 바꾼다(스크립트에서도 전환을 건너뛴다) */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
 }
