@@ -60,7 +60,7 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectShee
 
       <section className={styles.section} aria-labelledby="points-title">
         <h2 id="points-title" className={styles.sectionTitle}>
-          맛 포인트
+          주요 기능
         </h2>
         <ul className={styles.points}>
           {item.points.map((point) => (

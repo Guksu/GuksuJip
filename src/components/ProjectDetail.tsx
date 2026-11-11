@@ -56,7 +56,7 @@ export function ProjectDetail({ item, onClose, onMove }: ProjectDetailProps) {
             <dd>{item.dish}</dd>
             <dt>종류</dt>
             <dd>{item.kind}</dd>
-            <dt>재료</dt>
+            <dt>기술</dt>
             <dd>{item.stack.join(', ')}</dd>
           </dl>
           <span className={styles.stamp} aria-hidden="true">
@@ -79,7 +79,7 @@ export function ProjectDetail({ item, onClose, onMove }: ProjectDetailProps) {
 
       {/* 화면 전환은 눈으로만 보이므로, 무엇이 나왔는지 한 줄로 읽어 준다 */}
       <p className="sr-only" role="status">
-        {item.name} 나왔어요.
+        {item.name} 프로젝트 소개가 열렸어요.
       </p>
     </main>
   );

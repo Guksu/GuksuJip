@@ -6,7 +6,7 @@ export const owner = {
   /** 깃허브에서 쓰는 이름. 간판 아래 한 줄에 쓴다 */
   handle: 'Guksu',
   /** 한 줄 소개 */
-  bio: '직접 만든 도구와 앱을 차려 내는 집이에요.',
+  bio: '직접 만든 AI 개발 도구와 웹·모바일 앱을 모았어요.',
   github: 'https://github.com/Guksu',
   /** 연락용 이메일 */
   email: 'yung3152@gmail.com',

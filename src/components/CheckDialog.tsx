@@ -54,7 +54,7 @@ export function CheckDialog({ open, ordered, onClose, onClear }: CheckDialogProp
             {items.length}그릇 / {menu.length}
           </span>
         </p>
-        <p className={styles.note}>값은 받지 않아요. 드신 소감을 들려주세요.</p>
+        <p className={styles.note}>궁금한 점이나 사용 후기를 메일로 보내주세요.</p>
         <div className={styles.actions}>
           {owner.email !== '' && (
             <a className={styles.primary} href={`mailto:${owner.email}`}>
@@ -74,7 +74,7 @@ export function CheckDialog({ open, ordered, onClose, onClear }: CheckDialogProp
               onClose();
             }}
           >
-            상 치우기
+            본 메뉴 지우기
           </button>
           <button type="button" className={styles.textButton} onClick={onClose}>
             닫기

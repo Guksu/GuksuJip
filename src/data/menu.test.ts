@@ -16,7 +16,7 @@ describe('메뉴 데이터', () => {
     }
   });
 
-  it('모든 메뉴에 소개·맛 포인트·재료가 있다', () => {
+  it('모든 메뉴에 소개·주요 기능·사용 기술이 있다', () => {
     for (const item of menu) {
       expect(item.tagline.trim(), item.slug).not.toBe('');
       expect(item.intro.trim(), item.slug).not.toBe('');

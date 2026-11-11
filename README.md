@@ -26,7 +26,7 @@
 
 | 고칠 것 | 파일 |
 |---|---|
-| 프로젝트 추가·수정(이름, 소개, 맛 포인트, 재료, 링크, 그릇 색과 고명) | `src/data/menu.ts` |
+| 프로젝트 추가·수정(이름, 소개, 주요 기능, 사용 기술, 링크, 그릇 색과 고명) | `src/data/menu.ts` |
 | 제품 화면 이미지 | `src/assets/shots/{메뉴}/`에 넣고 `src/data/shots.ts`에 등록 |
 | 주인장 정보(이름, 한 줄 소개, 깃허브, 이메일) | `src/data/owner.ts` |
 | 색·글꼴·간격 | `src/styles/tokens.css` |

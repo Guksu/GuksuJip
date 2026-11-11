@@ -80,7 +80,7 @@ export function MenuBook({ open, ordered, active, onOpen, onHover, onOrder }: Me
             어서 오세요
           </h2>
           <p>{owner.bio}</p>
-          <p>차림표에서 메뉴를 고르면 한 그릇 내어 드려요. 드신 그릇은 상에 그대로 남아요.</p>
+          <p>메뉴를 고르면 프로젝트 소개가 열려요. 둘러본 메뉴는 상 위에 그릇으로 남아요.</p>
           <dl className={styles.info}>
             <dt>주인장</dt>
             <dd>

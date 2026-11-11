@@ -40,7 +40,7 @@ export function Spread({ open, ordered, active, onHover, onOrder, onShowCheck }:
         차려진 상 <span className={styles.count}>{ordered.length}그릇</span>
       </h2>
 
-      {open && ordered.length === 0 && !ghost && <p className={styles.empty}>주문한 그릇이 여기에 놓여요</p>}
+      {open && ordered.length === 0 && !ghost && <p className={styles.empty}>둘러본 프로젝트가 그릇으로 남아요</p>}
 
       <ul className={styles.bowls}>
         {menu.map((item, index) => {
