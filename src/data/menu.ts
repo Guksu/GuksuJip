@@ -50,6 +50,10 @@ export interface MenuItem {
   links: MenuLink[];
   /** 저장소가 비공개인지 */
   privateRepo?: boolean;
+  /** 제품 화면 대신 보여 줄 글자 자료(터미널 출력, 다듬기 전후 문장). README에 있는 내용만 쓴다 */
+  exhibit?: { text: string; caption: string };
+  /** 제품 화면에 덧붙일 한 줄 */
+  shotNote?: string;
   /** 이 프로젝트를 담아 내는 국수 이름 */
   dish: string;
   bowl: BowlSpec;
@@ -100,6 +104,18 @@ export const menu: MenuItem[] = [
     ],
     stack: ['JavaScript', 'Claude Code·Codex 스킬'],
     links: [repo('gimi')],
+    exhibit: {
+      caption: '지적 한 건은 이런 형식으로 나와요',
+      text: `[고쳐야 함] 영향 범위
+주문 상태 형태가 바뀌었는데 배지는 예전 형태를 읽는다
+
+바뀐 곳  src/api/order.ts:42
+         status: string → { code, label }
+근거     src/components/OrderBadge.tsx:12
+         status === 'PAID'  (이 PR에서 안 바뀜)
+상황     결제 완료 주문 → 배지가 항상 '알 수 없음'
+생긴 때  이번 변경`,
+    },
     dish: '잔치국수',
     bowl: { broth: '#dcc588', noodle: '#f8f1dc', toppings: ['egg', 'scallion', 'gim'] },
   },
@@ -119,6 +135,11 @@ export const menu: MenuItem[] = [
     ],
     stack: ['JavaScript', 'Node.js 22', 'Claude Code·Codex 훅'],
     links: [repo('guksu-harness'), { label: 'npm', href: 'https://www.npmjs.com/package/guksu-harness' }],
+    exhibit: {
+      caption: '설치와 점검',
+      text: `$ npx guksu-harness init --app both   # 훅·규칙·앱 등록 설치
+$ npx guksu-harness check             # 설치 상태 검사`,
+    },
     dish: '우동',
     bowl: { broth: '#a97a40', noodle: '#f4e8c8', toppings: ['fishcake', 'scallion', 'gim'] },
   },
@@ -137,6 +158,17 @@ export const menu: MenuItem[] = [
     ],
     stack: ['Claude 스킬', 'JavaScript'],
     links: [repo('geulppal')],
+    exhibit: {
+      caption: '다듬기 전(−)과 후(+)',
+      text: `− 마지막 단어 뒤에 넣을 insert 패치는 조용히 버려집니다.
++ 마지막 단어 뒤에 넣을 insert 패치는 오류 없이 버려집니다.
+
+− 값이 외부에서 바뀌거나 오염되면 타입이 거짓이 됩니다.
++ 값이 외부에서 바뀌거나 오염되면 타입이 실제 값과 맞지 않게 됩니다.
+
+− 구조를 바꾸면 조용히 틀린 결과가 나올 수 있습니다.
++ 구조를 바꾸면 오류 없이 틀린 결과가 나올 수 있습니다.`,
+    },
     dish: '콩국수',
     bowl: { broth: '#f2ecdb', noodle: '#ecdcae', toppings: ['cucumber', 'sesame'] },
   },
@@ -156,6 +188,20 @@ export const menu: MenuItem[] = [
     ],
     stack: ['TypeScript', 'Node.js CLI'],
     links: [repo('tokkaebi'), { label: 'npm', href: 'https://www.npmjs.com/package/tokkaebi' }],
+    exhibit: {
+      caption: 'tokkaebi today 출력(일부)',
+      text: `$ tokkaebi today
+✔ 파일 269개 확인 · +16건 수집 (0.0초)
+
+오늘 사용량 · 2026-08-11 (화) · $87.27
+
+모델            입력    출력      캐시 읽기    비용
+claude-fable-5  2,316   316,010   44,645,376   $86.88
+claude-opus-5      28        35      329,533    $0.40
+
+캐시 절감  $390.21 — 캐시가 없었다면 오늘 $477.48
+연속 사용  2일째`,
+    },
     dish: '짬뽕',
     bowl: { broth: '#c5492c', noodle: '#f3dfae', toppings: ['scallion', 'chili', 'zucchini'] },
   },
@@ -217,6 +263,7 @@ export const menu: MenuItem[] = [
     ],
     stack: ['TypeScript', 'React', 'Chrome 사이드 패널', 'OpenAI·Anthropic API'],
     links: [repo('NoodleLens')],
+    shotNote: '답변 화면은 실제 모델의 답이 아니라 예시로 만든 응답이에요.',
     dish: '비빔국수',
     bowl: { broth: '#ead9ae', noodle: '#f4e6c2', toppings: ['sauce', 'cucumber', 'egg', 'sesame'] },
   },
@@ -254,7 +301,7 @@ export const menu: MenuItem[] = [
       '압축 전후 용량과 줄어든 비율을 보여 주고 바로 내려받을 수 있어요.',
     ],
     stack: ['Vite', 'TypeScript', 'WebCodecs', 'FFmpeg.wasm', 'mp4box.js', 'mp4-muxer'],
-    links: [{ label: '써 보기', href: 'https://video-encoder-henna.vercel.app' }, repo('video-encoder')],
+    links: [repo('video-encoder')],
     dish: '쌀국수',
     bowl: { broth: '#d9ba7c', noodle: '#fbf6e6', toppings: ['scallion', 'chili', 'sesame'] },
   },
