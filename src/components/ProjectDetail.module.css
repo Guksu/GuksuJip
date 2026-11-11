@@ -1,0 +1,227 @@
+/* 좁은 화면이 기본: 상(그릇) → 주문서 → 소개 종이를 위에서 아래로 */
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+/* 상 */
+.table {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 300px;
+  overflow: hidden;
+}
+
+.bigBowl {
+  width: min(232px, 60vw);
+}
+
+.bowl {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(0 18px 14px rgb(60 35 10 / 0.45));
+}
+
+/* 젓가락 한 벌 — 그릇 오른쪽에 나란히 */
+.chopsticks {
+  position: absolute;
+  top: 14%;
+  right: 9%;
+  width: 11px;
+  height: 72%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--stick) 0 34%, transparent 34% 66%, var(--stick) 66% 100%);
+  filter: drop-shadow(0 6px 5px rgb(60 35 10 / 0.4));
+  rotate: 5deg;
+}
+
+/* 주문서 */
+.billArea {
+  padding: 0 var(--page-inline) var(--space-6);
+}
+
+.bill {
+  position: relative;
+  display: grid;
+  gap: var(--space-2);
+  max-width: 420px;
+  /* 그릇 아래로 살짝 걸치게 올린다 */
+  margin-top: calc(var(--space-6) * -1);
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  background: var(--color-surface);
+  box-shadow: 0 14px 22px -12px rgb(40 20 5 / 0.55);
+  font-size: var(--text-small);
+  rotate: -1.5deg;
+  animation: slip var(--motion-duration-slow) var(--motion-ease-out) 160ms backwards;
+}
+
+@keyframes slip {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.billTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: var(--weight-regular);
+}
+
+.billNo {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px dashed #b9b2a4;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.billList {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.billList dt {
+  color: var(--color-text-secondary);
+}
+
+.billList dd {
+  margin: 0;
+}
+
+/* 접수 도장 — 주문서가 놓인 뒤 한 번 찍힌다 */
+.stamp {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 3px solid var(--color-accent);
+  border-radius: var(--radius-full);
+  color: var(--color-accent-text);
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  line-height: 1;
+  rotate: -12deg;
+  animation: stamp var(--motion-duration-fast) var(--motion-ease-out) 520ms backwards;
+}
+
+@keyframes stamp {
+  from {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+/* 소개 종이 */
+.paper {
+  min-width: 0;
+  background: var(--color-surface);
+}
+
+/* 머리 한 줄 — 차림표로 돌아가기 */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding-inline: calc(var(--page-inline) - var(--space-2));
+  background: var(--color-surface);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  padding-inline: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: none;
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: transform var(--motion-duration-instant) var(--motion-ease-out);
+}
+
+.back:active {
+  transform: scale(0.97);
+}
+
+.backIcon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── 넓은 화면: 왼쪽에 상(그릇·주문서), 오른쪽에 소개 종이 ── */
+@media (min-width: 900px) {
+  .detail {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+
+  .table,
+  .billArea {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100dvh;
+  }
+
+  .bigBowl {
+    width: min(400px, 30vw);
+    /* 아래에 주문서가 놓일 자리를 남긴다 */
+    margin-top: -14vh;
+  }
+
+  .chopsticks {
+    top: 14%;
+    right: 10%;
+    width: 14px;
+    height: 46vh;
+  }
+
+  /* 주문서는 상의 왼쪽 아래에 놓는다. 영역 자체는 그릇을 가리지 않게 눌리지 않는다 */
+  .billArea {
+    display: grid;
+    align-content: end;
+    justify-content: start;
+    padding: 0 0 6vh 9%;
+    pointer-events: none;
+  }
+
+  .bill {
+    width: 264px;
+    margin-top: 0;
+    pointer-events: auto;
+    rotate: -3deg;
+  }
+
+  .paper {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 100dvh;
+  }
+
+  .bar {
+    padding-inline: calc(var(--space-12) - var(--space-2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bill,
+  .stamp {
+    animation: none;
+  }
+
+  .back:active {
+    transform: none;
+  }
+}

@@ -1,8 +1,11 @@
 .sheet {
+  /* 종이 안쪽 좌우 여백. 옆으로 넘기는 앱 화면이 이 값만큼 밖으로 나간다 */
+  --sheet-inline: var(--page-inline);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-8);
-  max-width: 640px;
-  padding: var(--space-6) var(--page-inline) calc(var(--space-12) + env(safe-area-inset-bottom));
+  max-width: 760px;
+  padding: var(--space-4) var(--sheet-inline) calc(var(--space-12) + env(safe-area-inset-bottom));
 }
 
 .head {
@@ -81,7 +84,8 @@
   color: var(--color-text-secondary);
 }
 
-.intro {
+.intro,
+.points {
   max-width: var(--measure);
 }
 
@@ -116,10 +120,6 @@
   height: 6px;
   border-radius: var(--radius-full);
   background: var(--color-accent);
-}
-
-.stack {
-  color: var(--color-text-secondary);
 }
 
 /* 다른 메뉴 */
@@ -168,13 +168,13 @@
   }
 }
 
-@media (min-width: 960px) {
+@media (min-width: 900px) {
   .sheet {
-    padding-inline: var(--space-12);
+    --sheet-inline: var(--space-12);
   }
 
   .name {
-    font-size: 56px;
+    font-size: 64px;
   }
 }
 

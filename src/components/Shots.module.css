@@ -1,0 +1,79 @@
+.figure {
+  margin: 0;
+}
+
+/* 웹 화면 한 장 */
+.screen {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+/* 앱 화면 — 옆으로 넘겨 본다 */
+.phones {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(168px, 30%);
+  gap: var(--space-3);
+  /* 종이 가장자리까지 넘겨지도록 안쪽 여백만큼 밖으로 뺀다 */
+  margin-inline: calc(var(--sheet-inline) * -1);
+  padding: 0 var(--sheet-inline) var(--space-3);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--sheet-inline);
+  overscroll-behavior-x: contain;
+}
+
+.phone {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  scroll-snap-align: start;
+}
+
+/* 터미널 출력 */
+.term {
+  margin: 0;
+  padding: var(--space-6);
+  overflow-x: auto;
+  border-radius: var(--radius-control);
+  background: #1c1815;
+  color: #eee4d2;
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--text-small);
+  line-height: 1.6;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.caption {
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.more {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.moreTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-regular);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-3);
+}
+
+.more .caption {
+  margin-top: 0;
+}

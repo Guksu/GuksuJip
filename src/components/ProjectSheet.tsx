@@ -1,5 +1,6 @@
 import type { Ref } from 'react';
 import { categories, type MenuItem } from '../data/menu';
+import { LeadShots, MoreShots } from './Shots';
 import styles from './ProjectSheet.module.css';
 
 interface ProjectSheetProps {
@@ -9,7 +10,6 @@ interface ProjectSheetProps {
   onMove: (slug: string) => void;
   /** 화면이 열리면 제목으로 포커스를 옮기기 위한 ref */
   titleRef: Ref<HTMLHeadingElement>;
-  titleId: string;
 }
 
 function ArrowOut() {
@@ -20,19 +20,17 @@ function ArrowOut() {
   );
 }
 
-/** 프로젝트 소개. 그릇 옆(좁은 화면에서는 아래)에 놓이는 종이 한 장. */
-export function ProjectSheet({ item, prev, next, onMove, titleRef, titleId }: ProjectSheetProps) {
+/** 프로젝트 소개. 그릇 옆(좁은 화면에서는 아래)에 놓이는 종이 한 장.
+ *  종류·재료 같은 사실은 상 위의 주문서가 맡고, 여기서는 무엇을 만들었는지를 화면과 글로 보여 준다. */
+export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectSheetProps) {
   const category = categories.find((c) => c.id === item.category);
   const [primary, ...others] = item.links;
-  // 분류 이름에 종류가 이미 들어 있으면(AI 도구·스킬의 '스킬') 되풀이하지 않는다
-  const categoryTitle = category?.title ?? '';
-  const meta = categoryTitle.includes(item.kind) ? categoryTitle : `${categoryTitle} · ${item.kind}`;
 
   return (
-    <article className={styles.sheet}>
+    <div className={styles.sheet}>
       <header className={styles.head}>
-        <p className={styles.meta}>{meta}</p>
-        <h1 id={titleId} ref={titleRef} tabIndex={-1} className={styles.name}>
+        <p className={styles.meta}>{category?.title}</p>
+        <h1 ref={titleRef} tabIndex={-1} className={styles.name}>
           {item.name}
         </h1>
         <p className={styles.tagline}>{item.tagline}</p>
@@ -56,10 +54,12 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef, titleId }: Pr
         </div>
       )}
 
+      <LeadShots item={item} />
+
       <p className={styles.intro}>{item.intro}</p>
 
-      <section className={styles.section} aria-labelledby={`${titleId}-points`}>
-        <h2 id={`${titleId}-points`} className={styles.sectionTitle}>
+      <section className={styles.section} aria-labelledby="points-title">
+        <h2 id="points-title" className={styles.sectionTitle}>
           맛 포인트
         </h2>
         <ul className={styles.points}>
@@ -69,12 +69,7 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef, titleId }: Pr
         </ul>
       </section>
 
-      <section className={styles.section} aria-labelledby={`${titleId}-stack`}>
-        <h2 id={`${titleId}-stack`} className={styles.sectionTitle}>
-          재료
-        </h2>
-        <p className={styles.stack}>{item.stack.join(' · ')}</p>
-      </section>
+      <MoreShots item={item} />
 
       <nav className={styles.others} aria-label="다른 메뉴">
         <button type="button" className={styles.move} onClick={() => onMove(prev.slug)}>
@@ -86,6 +81,6 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef, titleId }: Pr
           <span className={styles.moveName}>{next.name}</span>
         </button>
       </nav>
-    </article>
+    </div>
   );
 }
