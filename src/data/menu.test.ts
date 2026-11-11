@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { categories, findMenu, menu, menuByCategory } from './menu';
 import { parseHash, toHash } from '../hooks/useHashRoute';
+import { addOrdered, parseOrdered } from '../hooks/useOrdered';
+import { shotsOf } from './shots';
 
 describe('메뉴 데이터', () => {
   it('주소 이름(slug)이 겹치지 않는다', () => {
@@ -70,5 +72,45 @@ describe('해시 주소', () => {
       expect(parseHash(toHash(item.slug))).toBe(item.slug);
     }
     expect(toHash(null)).toBe('#/');
+  });
+});
+
+describe('제품 화면', () => {
+  it('화면도 글자 자료도 없는 메뉴는 정해 둔 것뿐이다', () => {
+    const bare = menu.filter((item) => shotsOf(item.slug).length === 0 && !item.exhibit).map((item) => item.slug);
+    expect(bare).toEqual(['video-encoder']);
+  });
+
+  it('모든 화면에 설명(alt)과 크기가 있다', () => {
+    for (const item of menu) {
+      for (const shot of shotsOf(item.slug)) {
+        expect(shot.alt.trim(), item.slug).not.toBe('');
+        expect(shot.width, item.slug).toBeGreaterThan(0);
+        expect(shot.height, item.slug).toBeGreaterThan(0);
+      }
+    }
+  });
+});
+
+describe('주문 기록', () => {
+  const slugs = menu.map((item) => item.slug);
+
+  it('저장된 목록을 읽는다', () => {
+    expect(parseOrdered('["suta","gimi"]', slugs)).toEqual(['suta', 'gimi']);
+  });
+
+  it('깨진 값, 배열이 아닌 값, 비어 있는 값은 빈 목록으로 본다', () => {
+    expect(parseOrdered(null, slugs)).toEqual([]);
+    expect(parseOrdered('{', slugs)).toEqual([]);
+    expect(parseOrdered('{"suta":true}', slugs)).toEqual([]);
+  });
+
+  it('지금은 없는 메뉴와 겹친 메뉴는 버린다', () => {
+    expect(parseOrdered('["suta","없는-메뉴",3,"suta"]', slugs)).toEqual(['suta']);
+  });
+
+  it('이미 주문한 메뉴는 다시 더하지 않는다', () => {
+    expect(addOrdered(['suta'], 'gimi')).toEqual(['suta', 'gimi']);
+    expect(addOrdered(['suta'], 'suta')).toEqual(['suta']);
   });
 });
