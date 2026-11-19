@@ -86,7 +86,7 @@ export function Spread({ open, ordered, active, onHover, onOrder, onShowCheck }:
         <button type="button" className={styles.check} onClick={onShowCheck}>
           <span className={styles.checkTitle}>계산서</span>
           <span className={styles.checkCount}>
-            {ordered.length}그릇 / {menu.length}
+            {menu.length}그릇 중 {ordered.length}그릇
           </span>
           <span className={styles.checkGo}>펼쳐 보기</span>
         </button>

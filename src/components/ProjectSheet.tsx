@@ -21,7 +21,7 @@ function ArrowOut() {
 }
 
 /** 프로젝트 소개. 그릇 옆(좁은 화면에서는 아래)에 놓이는 종이 한 장.
- *  종류·재료 같은 사실은 상 위의 주문서가 맡고, 여기서는 무엇을 만들었는지를 화면과 글로 보여 준다. */
+ *  종류·재료·저장소 공개 여부 같은 사실은 상 위의 주문서가 맡고, 여기서는 무엇을 만들었는지를 화면과 글로 보여 준다. */
 export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectSheetProps) {
   const category = categories.find((c) => c.id === item.category);
   const [primary, ...others] = item.links;
@@ -36,7 +36,7 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectShee
         <p className={styles.tagline}>{item.tagline}</p>
       </header>
 
-      {(item.links.length > 0 || item.privateRepo) && (
+      {item.links.length > 0 && (
         <div className={styles.actions}>
           {primary && (
             <a className={styles.primary} href={primary.href} target="_blank" rel="noreferrer">
@@ -50,7 +50,6 @@ export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectShee
               <ArrowOut />
             </a>
           ))}
-          {item.privateRepo && <p className={styles.note}>저장소는 비공개예요.</p>}
         </div>
       )}
 

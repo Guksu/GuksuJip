@@ -6,7 +6,7 @@ import { withViewTransition } from './lib/viewTransition';
 import { Home } from './components/Home';
 import { ProjectDetail } from './components/ProjectDetail';
 
-const SITE_TITLE = '국수집 — Guksu의 차림표';
+const SITE_TITLE = '국수집 · Guksu의 차림표';
 const SLUGS = menu.map((item) => item.slug);
 
 export function App() {
@@ -54,7 +54,7 @@ export function App() {
 
   const openBook = useCallback(() => {
     // 넓은 화면에서는 표지가 넘어가는 움직임이 있고, 좁은 화면에서는 화면이 통째로 바뀌므로 전환으로 감싼다
-    if (window.matchMedia('(min-width: 900px)').matches) setOpen(true);
+    if (window.matchMedia('(min-width: 1100px)').matches) setOpen(true);
     else withViewTransition(() => setOpen(true));
   }, []);
 

@@ -1,11 +1,14 @@
 /* 상. 배경(원목)은 body에 있고, 여기서는 그 위에 놓이는 것들의 자리를 잡는다. */
 .desk {
-  /* 차림표 한 면의 크기 — 메뉴 13줄이 들어가는 높이 */
+  /* 차림표 한 면의 크기. 높이는 화면 높이를 따라 줄어들고, 줄 높이(MenuBook의 --row-h)가 거기에 맞춰진다 */
   --page-w: clamp(280px, 22vw, 340px);
-  --page-h: 700px;
+  --page-h: clamp(560px, calc(100dvh - 120px), 700px);
+  /* 펼친 책의 왼쪽 면이 화면 밖으로 나가지 않는 책 왼쪽 모서리 자리 */
+  --book-left: max(25vw, calc(var(--page-w) + var(--space-6)));
   position: relative;
   height: 100dvh;
-  min-height: 780px;
+  /* 책(560) + 아래 안내 문구가 들어가는 높이 */
+  min-height: 680px;
   overflow: hidden;
   /* 표지가 넘어갈 때의 원근 */
   perspective: 2200px;
@@ -67,10 +70,11 @@
 }
 
 /* ── 좁은 화면 ── */
-@media (max-width: 899px) {
+@media (max-width: 1099px) {
   .desk {
     --page-w: min(66vw, 280px);
     --page-h: calc(var(--page-w) * 1.72);
+    --column-max: 560px;
     min-height: 0;
   }
 
@@ -85,9 +89,16 @@
     gap: var(--space-8);
     height: auto;
     min-height: 100dvh;
+    align-items: center;
     padding: var(--space-4) var(--page-inline) calc(var(--space-12) + env(safe-area-inset-bottom));
     overflow: visible;
     perspective: none;
+  }
+
+  /* 넓은 태블릿에서 차림표 줄과 그릇이 한없이 늘어나지 않게 한 열의 폭을 정한다 */
+  .desk[data-open='true'] > * {
+    width: 100%;
+    max-width: var(--column-max);
   }
 }
 

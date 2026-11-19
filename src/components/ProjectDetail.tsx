@@ -34,6 +34,16 @@ export function ProjectDetail({ item, onClose, onMove }: ProjectDetailProps) {
 
   return (
     <main className={styles.detail}>
+      {/* 머리 한 줄. 좁은 화면에서도 맨 위에 보이도록 상보다 앞에 둔다 */}
+      <div className={styles.bar}>
+        <button type="button" className={styles.back} onClick={onClose}>
+          <svg className={styles.backIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          차림표
+        </button>
+      </div>
+
       {/* 상 — 그릇이 놓이는 자리 */}
       <div className={styles.table}>
         <div className={styles.bigBowl} style={{ viewTransitionName: 'bowl' }}>
@@ -58,6 +68,12 @@ export function ProjectDetail({ item, onClose, onMove }: ProjectDetailProps) {
             <dd>{item.kind}</dd>
             <dt>기술</dt>
             <dd>{item.stack.join(', ')}</dd>
+            {item.privateRepo && (
+              <>
+                <dt>저장소</dt>
+                <dd>비공개</dd>
+              </>
+            )}
           </dl>
           <span className={styles.stamp} aria-hidden="true">
             접수
@@ -66,14 +82,6 @@ export function ProjectDetail({ item, onClose, onMove }: ProjectDetailProps) {
       </aside>
 
       <article className={styles.paper}>
-        <div className={styles.bar}>
-          <button type="button" className={styles.back} onClick={onClose}>
-            <svg className={styles.backIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            차림표
-          </button>
-        </div>
         <ProjectSheet item={item} prev={prev} next={next} onMove={onMove} titleRef={titleRef} />
       </article>
 

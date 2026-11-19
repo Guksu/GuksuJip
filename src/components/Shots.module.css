@@ -12,11 +12,12 @@
   background: var(--color-surface);
 }
 
-/* 앱 화면 — 옆으로 넘겨 본다 */
+/* 세로 화면(앱, 사이드 패널) — 옆으로 넘겨 본다 */
 .phones {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(168px, 30%);
+  /* minmax로 쓰면 칸이 최솟값에서 남는 폭만 나눠 가져서 뒤쪽 값이 무시된다 */
+  grid-auto-columns: max(var(--shot-min, 168px), 30%);
   gap: var(--space-3);
   /* 종이 가장자리까지 넘겨지도록 안쪽 여백만큼 밖으로 뺀다 */
   margin-inline: calc(var(--sheet-inline) * -1);
@@ -70,8 +71,18 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
+}
+
+/* 넓은 화면에서는 종이 밖으로 빼지 않고 본문 폭 안에 정해진 장수를 놓는다 */
+@media (min-width: 900px) {
+  .phones {
+    grid-auto-columns: max(150px, calc((100% - 3 * var(--space-3)) / var(--per-view, 4)));
+    margin-inline: 0;
+    padding-inline: 0;
+    scroll-padding-inline: 0;
+  }
 }
 
 .more .caption {

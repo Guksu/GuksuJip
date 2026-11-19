@@ -51,7 +51,7 @@ export function CheckDialog({ open, ordered, onClose, onClear }: CheckDialogProp
         <p className={styles.total}>
           <span>합계</span>
           <span>
-            {items.length}그릇 / {menu.length}
+            {menu.length}그릇 중 {items.length}그릇
           </span>
         </p>
         <p className={styles.note}>궁금한 점이나 사용 후기를 메일로 보내주세요.</p>

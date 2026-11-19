@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { categories, menuByCategory } from '../data/menu';
+import { useEffect, useRef, type CSSProperties } from 'react';
+import { categories, menu, menuByCategory } from '../data/menu';
 import { owner } from '../data/owner';
 import styles from './MenuBook.module.css';
 
@@ -28,7 +28,12 @@ export function MenuBook({ open, ordered, active, onOpen, onHover, onOrder }: Me
 
   return (
     <div className={styles.book} data-open={open}>
-      <section className={`${styles.leaf} ${styles.menuPage}`} aria-labelledby="menu-title" inert={!open}>
+      <section
+        className={`${styles.leaf} ${styles.menuPage}`}
+        aria-labelledby="menu-title"
+        inert={!open}
+        style={{ '--menu-rows': menu.length } as CSSProperties}
+      >
         <h2 id="menu-title" ref={titleRef} tabIndex={-1} className={styles.pageTitle}>
           차림표
         </h2>

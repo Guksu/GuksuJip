@@ -113,12 +113,18 @@
 }
 
 .textButton {
+  min-width: var(--tap-min);
   min-height: var(--tap-min);
   padding: 0;
   border: 0;
   background: none;
   color: var(--color-text-secondary);
   cursor: pointer;
+}
+
+/* 오른쪽 끝의 닫기는 글자를 종이 오른쪽 선에 맞춘다 */
+.foot .textButton:last-child {
+  text-align: right;
 }
 
 @media (hover: hover) {
