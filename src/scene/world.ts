@@ -80,6 +80,18 @@ export function buildExterior(): THREE.Group {
   v.b(-14, -6.2, 0, 6.5, -8, -0.6, '#1d2230').b(6.2, 15, 0, 5.2, -8, -0.8, '#1b202d');
   v.b(-12.5, -11.3, 3.6, 4.6, -0.62, -0.58, '#3b4660').b(8, 9, 2.4, 3.4, -0.82, -0.78, '#3b4660');
   v.b(7.0, 7.25, 0, 7.5, 0.9, 1.15, '#2a2622').b(6.4, 7.85, 6.6, 6.75, 0.95, 1.1, '#2a2622');
+  // 쌓인 눈
+  const SNOW = '#e8eef6';
+  v.b(-halfW - 0.85, halfW + 0.85, wallH + 0.34, wallH + 0.46, 0.2, 1.5, SNOW);
+  v.b(-halfW - 0.7, halfW + 0.7, wallH + 0.66, wallH + 0.76, -0.5, 0.74, SNOW);
+  v.b(-1.9, 1.9, 4.12, 4.2, 0.08, 0.26, SNOW);
+  v.b(2.3, 3.3, 0.67, 0.73, 0.7, 1.4, SNOW);
+  v.b(-3.3, -2.3, 1.5, 1.56, 1.1, 1.2, SNOW);
+  for (let i = 0; i < 9; i++) {
+    const x = -12 + i * 3.1 + (i % 2) * 0.8;
+    if (Math.abs(x) < 1.6) continue;
+    v.b(x, x + 1.6 + (i % 3) * 0.5, 0, 0.05, 2.2 + (i % 4) * 1.9, 3.3 + (i % 4) * 1.9, SNOW);
+  }
   g.add(v.mesh());
 
   // 빛나는 것 — 창호지, 초롱
@@ -229,8 +241,8 @@ export interface Owner {
   head: THREE.Group;
   armL: THREE.Group;
   armR: THREE.Group;
-  /** 말풍선을 붙일 자리(머리 위) */
-  anchor: THREE.Object3D;
+  /** 눈꺼풀. 잠깐 보이게 해서 눈을 깜빡인다 */
+  lids: THREE.Mesh;
 }
 
 export function buildOwner(): Owner {
@@ -284,10 +296,13 @@ export function buildOwner(): Owner {
   const armL = makeArm(-1);
   const armR = makeArm(1);
 
-  const anchor = new THREE.Object3D();
-  anchor.position.set(0, 1.25, 0);
-  head.add(anchor);
-  return { root, torso, head, armL, armR, anchor };
+  const lidBox = new Vox();
+  lidBox.c(-0.2, 0.44, 0.385, 0.12, 0.1, 0.02, SKIN).c(0.2, 0.44, 0.385, 0.12, 0.1, 0.02, SKIN);
+  lidBox.c(-0.2, 0.39, 0.39, 0.12, 0.03, 0.02, '#1c1917').c(0.2, 0.39, 0.39, 0.12, 0.03, 0.02, '#1c1917');
+  const lids = lidBox.mesh();
+  lids.visible = false;
+  head.add(lids);
+  return { root, torso, head, armL, armR, lids };
 }
 
 // ── 그릇 ────────────────────────────────────────────────
@@ -357,4 +372,69 @@ export function buildMenuBoard(): THREE.Group {
   for (let i = 0; i < 6; i++) v.c(-0.05 + (i % 2) * 0.06, 0.34 - i * 0.14, 0.05, 0.5 - (i % 3) * 0.08, 0.04, 0.01, '#3a2a1c');
   g.add(v.mesh());
   return g;
+}
+
+// ── 가게 앞의 고양이와 행인 ─────────────────────────────
+export interface Cat {
+  root: THREE.Group;
+  tail: THREE.Group;
+  head: THREE.Group;
+}
+
+/** 긴 의자 위에 앉은 고양이 */
+export function buildCat(): Cat {
+  const FUR = '#d98a3a';
+  const root = new THREE.Group();
+  const body = new Vox();
+  body.c(0, 0.17, 0, 0.34, 0.34, 0.44, FUR).c(0, 0.14, 0.2, 0.2, 0.26, 0.06, '#f6ead4');
+  body.c(-0.1, 0.03, 0.24, 0.1, 0.06, 0.1, '#f6ead4').c(0.1, 0.03, 0.24, 0.1, 0.06, 0.1, '#f6ead4');
+  body.c(0, 0.3, -0.06, 0.34, 0.03, 0.08, '#b96a24').c(0, 0.3, 0.08, 0.34, 0.03, 0.06, '#b96a24');
+  root.add(body.mesh());
+
+  const head = new THREE.Group();
+  head.position.set(0, 0.36, 0.14);
+  const face = new Vox();
+  face.c(0, 0.12, 0, 0.3, 0.24, 0.24, FUR).c(0, 0.06, 0.12, 0.14, 0.1, 0.02, '#f6ead4');
+  face.c(-0.1, 0.28, 0, 0.08, 0.1, 0.08, FUR).c(0.1, 0.28, 0, 0.08, 0.1, 0.08, FUR); // 귀
+  face.c(-0.07, 0.15, 0.125, 0.04, 0.05, 0.02, '#1c1917').c(0.07, 0.15, 0.125, 0.04, 0.05, 0.02, '#1c1917');
+  face.c(0, 0.09, 0.135, 0.04, 0.03, 0.02, '#d98a8a');
+  head.add(face.mesh());
+  root.add(head);
+
+  const tail = new THREE.Group();
+  tail.position.set(0.14, 0.06, -0.2);
+  const tailBox = new Vox();
+  tailBox.c(0.18, 0.03, 0, 0.36, 0.07, 0.07, FUR).c(0.38, 0.03, 0, 0.08, 0.08, 0.08, '#b96a24');
+  tail.add(tailBox.mesh());
+  root.add(tail);
+  return { root, tail, head };
+}
+
+export interface Walker {
+  root: THREE.Group;
+  legL: THREE.Group;
+  legR: THREE.Group;
+}
+
+/** 우산을 쓰고 가게 앞을 지나가는 사람. +x 쪽을 보고 걷는다 */
+export function buildWalker(): Walker {
+  const root = new THREE.Group();
+  const body = new Vox();
+  body.c(0, 1.25, 0, 0.5, 0.9, 0.6, '#3b4a66'); // 외투
+  body.c(0, 1.72, 0, 0.56, 0.14, 0.64, '#a3362a'); // 목도리
+  body.c(0, 2.0, 0, 0.44, 0.44, 0.44, '#d7a47f').c(-0.02, 2.2, 0, 0.5, 0.14, 0.5, '#1c1917');
+  body.c(0.2, 1.75, 0.34, 0.05, 1.5, 0.05, '#2a2622'); // 우산대
+  body.c(0.2, 2.55, 0.1, 1.5, 0.08, 1.5, '#b23a26').c(0.2, 2.63, 0.1, 0.9, 0.08, 0.9, '#c4442e');
+  body.c(0.2, 2.71, 0.1, 0.9, 0.05, 0.9, '#e8eef6'); // 우산 위의 눈
+  root.add(body.mesh());
+  const makeLeg = (z: number) => {
+    const pivot = new THREE.Group();
+    pivot.position.set(0, 0.8, z);
+    const leg = new Vox();
+    leg.c(0, -0.36, 0, 0.2, 0.72, 0.2, '#23262e').c(0.04, -0.76, 0, 0.28, 0.1, 0.22, '#15171c');
+    pivot.add(leg.mesh());
+    root.add(pivot);
+    return pivot;
+  };
+  return { root, legL: makeLeg(-0.14), legR: makeLeg(0.14) };
 }

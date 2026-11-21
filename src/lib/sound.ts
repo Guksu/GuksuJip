@@ -1,7 +1,7 @@
 /** 효과음과 배경음. 소리 파일 없이 Web Audio로 그 자리에서 만든다.
  *  켜기 전에는 아무것도 만들지 않고, 브라우저 정책상 사용자가 누른 뒤에야 소리가 난다. */
 
-export type Sfx = 'tick' | 'select' | 'back' | 'talk' | 'door' | 'serve';
+export type Sfx = 'tick' | 'select' | 'back' | 'talk' | 'door' | 'serve' | 'meow';
 
 // 배경음 — 사장조 5음(솔 라 시 레 미)으로 쓴 네 마디. 8분음표 여덟 칸이 한 마디, 0은 쉼
 const N = { G2: 98, C3: 130.81, D3: 146.83, E2: 82.41, G4: 392, A4: 440, B4: 493.88, D5: 587.33, E5: 659.25, G5: 783.99 };
@@ -68,6 +68,9 @@ export class Sound {
         break;
       case 'door':
         this.swish(t);
+        break;
+      case 'meow':
+        this.meow(t);
         break;
     }
   }
@@ -163,6 +166,26 @@ export class Sound {
     source.connect(filter).connect(gain).connect(this.master!);
     source.start(at);
     source.stop(at + 0.6);
+  }
+
+  /** 고양이 소리 — 음이 올라갔다가 내려온다 */
+  private meow(at: number): void {
+    const ctx = this.ctx!;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(620, at);
+    osc.frequency.linearRampToValueAtTime(940, at + 0.12);
+    osc.frequency.linearRampToValueAtTime(560, at + 0.42);
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1400;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, at);
+    gain.gain.exponentialRampToValueAtTime(0.16, at + 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + 0.45);
+    osc.connect(filter).connect(gain).connect(this.master!);
+    osc.start(at);
+    osc.stop(at + 0.5);
   }
 
   private startBgm(): void {

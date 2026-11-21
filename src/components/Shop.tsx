@@ -4,6 +4,7 @@ import { Sound } from '../lib/sound';
 import type { Phase, Stage } from '../scene/stage';
 import { CheckDialog } from './CheckDialog';
 import { DetailPanel } from './DetailPanel';
+import { Dialogue } from './Dialogue';
 import { MenuPanel } from './MenuPanel';
 import { TitleScreen } from './TitleScreen';
 import styles from './Shop.module.css';
@@ -45,7 +46,6 @@ interface ShopProps {
 /** 가게 한 채. 3D 장면 위에 안내·말풍선·차림표·소개를 얹고, 주문에 맞춰 장면을 움직인다. */
 export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const bubbleRef = useRef<HTMLParagraphElement>(null);
   const [stage, setStage] = useState<Stage | null>(null);
   /** 장면을 못 띄운 경우(WebGL을 못 쓰는 브라우저). 차림표와 소개만으로 동작한다 */
   const [failed, setFailed] = useState(false);
@@ -94,10 +94,10 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
       .then(({ createStage }) =>
         createStage({
           canvas: canvasRef.current!,
-          bubble: bubbleRef.current!,
           reduceMotion,
           onPhase: (next) => live && setScenePhase(next),
           onSay: (next) => live && setLine(next),
+          onCat: () => sound.play('meow'),
         }),
       )
       .then((made) => {
@@ -115,7 +115,7 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
       created?.dispose();
       setStage(null);
     };
-  }, [reduceMotion]);
+  }, [reduceMotion, sound]);
 
   // 주소(주문)가 바뀌면 장면을 그에 맞춘다
   useEffect(() => {
@@ -163,11 +163,8 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
         </button>
       )}
 
-      {/* 말풍선은 한 글자씩 찍히므로 읽어 주는 글은 따로 한 번에 둔다 */}
-      <p ref={bubbleRef} className={styles.bubble} aria-hidden="true" hidden={!line || failed || phase === 'outside'}>
-        {typed}
-        <span className={styles.rest}>{rest}</span>
-      </p>
+      {/* 대화창은 한 글자씩 찍히므로 읽어 주는 글은 따로 한 번에 둔다 */}
+      <Dialogue show={line !== null && !failed && phase !== 'outside' && phase !== 'served'} typed={typed} rest={rest} />
       <p className="sr-only" role="status">
         {phase === 'outside' ? '' : line?.replace('\n', ' ')}
       </p>

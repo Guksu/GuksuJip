@@ -5,12 +5,14 @@ import { lerp } from './vox';
 import {
   COUNTER,
   buildBowl,
+  buildCat,
   buildChopsticks,
   buildExterior,
   buildInterior,
   buildMenuBoard,
   buildNoren,
   buildOwner,
+  buildWalker,
 } from './world';
 
 /** 가게에서 지금 벌어지는 일 */
@@ -18,12 +20,12 @@ export type Phase = 'outside' | 'entering' | 'greeting' | 'menu' | 'cooking' | '
 
 export interface StageOptions {
   canvas: HTMLCanvasElement;
-  /** 주인장 머리 위에 붙여 둘 말풍선 요소. 자리만 옮기고 글은 건드리지 않는다 */
-  bubble: HTMLElement;
   reduceMotion: boolean;
   onPhase: (phase: Phase) => void;
-  /** 주인장이 하는 말. null이면 말풍선을 치운다 */
+  /** 주인장이 하는 말. null이면 대화창을 치운다 */
   onSay: (line: string | null) => void;
+  /** 가게 앞 고양이를 눌렀을 때 */
+  onCat: () => void;
 }
 
 export interface Stage {
@@ -62,7 +64,7 @@ export function slotOf(index: number): [number, number, number] {
 }
 
 export async function createStage(opts: StageOptions): Promise<Stage> {
-  const { canvas, bubble, reduceMotion } = opts;
+  const { canvas, reduceMotion } = opts;
   const T = (seconds: number) => (reduceMotion ? 0 : seconds);
 
   // WebGL을 못 쓰면 여기서 예외가 나고, 부른 쪽이 장면 없는 화면으로 넘어간다
@@ -85,11 +87,13 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     ['#ffd9a0', 12, 12, 3, 3.0, -7.5],
     ['#ffcf90', 12, 9, 0, 3.2, -1.4],
   ];
-  for (const [color, intensity, distance, x, y, z] of lamps) {
+  const lights = lamps.map(([color, intensity, distance, x, y, z]) => {
     const light = new THREE.PointLight(color, intensity, distance, 1.6);
     light.position.set(x, y, z);
     scene.add(light);
-  }
+    return light;
+  });
+  const lanternLights = lights.slice(0, 2);
 
   // 간판과 노렌의 글자를 픽셀 글꼴로 그리려면 글꼴이 먼저 와 있어야 한다
   await document.fonts.load('12px Galmuri11', '국수집한상면〇').catch(() => undefined);
@@ -108,6 +112,30 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   chopsticks.position.set(0.85, COUNTER.top, -4.7);
   chopsticks.visible = false;
   scene.add(chopsticks);
+
+  // 가게 앞 — 의자 위의 고양이, 가끔 지나가는 사람, 내리는 눈
+  const cat = buildCat();
+  cat.root.position.set(3.95, 0.67, 1.05);
+  cat.root.rotation.y = -0.35;
+  scene.add(cat.root);
+  let catHop = 0;
+  const walker = buildWalker();
+  walker.root.position.set(-40, 0, 4.2);
+  scene.add(walker.root);
+  let walkAt = 6; // 다음에 지나가기 시작할 시각(초)
+  const FLAKES = reduceMotion ? 0 : 160;
+  const snow = new THREE.InstancedMesh(new THREE.BoxGeometry(0.07, 0.07, 0.07), new THREE.MeshBasicMaterial({ color: '#eef3fa' }), Math.max(1, FLAKES));
+  snow.count = FLAKES;
+  snow.frustumCulled = false;
+  scene.add(snow);
+  const flakes = Array.from({ length: FLAKES }, (_, i) => ({
+    x: ((i * 7919) % 300) / 10 - 15,
+    y: ((i * 104729) % 130) / 10,
+    // 카메라 바로 앞의 눈송이는 화면을 가릴 만큼 크게 보이므로 가게 쪽에만 내리게 한다
+    z: 0.6 + ((i * 1299709) % 80) / 10,
+    speed: 0.7 + ((i * 31) % 10) / 14,
+  }));
+  const flakeMatrix = new THREE.Matrix4();
 
   // 김 — 솥에서 늘 조금씩 오르고, 조리할 때와 그릇이 나왔을 때 더 오른다
   const steamMat = new THREE.MeshBasicMaterial({ color: '#f4efe4', transparent: true, opacity: 0.5 });
@@ -387,16 +415,21 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     raycaster.setFromCamera(ndc, camera);
     return raycaster.intersectObject(doorHit).length > 0;
   };
+  const hitsCat = () => raycaster.intersectObject(cat.root, true).length > 0;
   const onPointerMove = (event: PointerEvent) => {
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
     if (phase !== 'outside') return;
     overDoor = hitsDoor(event);
-    canvas.style.cursor = overDoor ? 'pointer' : '';
+    canvas.style.cursor = overDoor || hitsCat() ? 'pointer' : '';
   };
   const onClick = (event: MouseEvent) => {
     if (phase === 'outside' && hitsDoor(event)) push(runEnter);
-    else if (phase === 'entering' || phase === 'greeting' || phase === 'cooking') hurried = true;
+    else if (phase === 'outside' && hitsCat()) {
+      // 고양이를 누르면 폴짝 뛴다
+      opts.onCat();
+      if (!reduceMotion) void tweens.run(0.4, (k) => (catHop = Math.sin(k * Math.PI) * 0.3));
+    } else if (phase === 'entering' || phase === 'greeting' || phase === 'cooking') hurried = true;
   };
   const onResize = () => {
     const w = window.innerWidth;
@@ -416,7 +449,6 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
 
   // ── 그리기 ──
   let last = performance.now();
-  const projected = new THREE.Vector3();
   let time = 0;
   let sway = 0;
   let raf = 0;
@@ -444,6 +476,37 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
       });
     }
 
+    // 주인장이 가끔 눈을 깜빡인다
+    owner.lids.visible = !reduceMotion && time % 4.2 < 0.13;
+
+    // 가게 앞은 밖에 있을 때만 움직인다
+    if (cam.pos.z > 0 && !reduceMotion) {
+      lanternLights.forEach((light, i) => {
+        light.intensity = 14 * (1 + Math.sin(time * 9 + i * 2) * 0.07 + Math.sin(time * 23 + i) * 0.05);
+      });
+      cat.tail.rotation.y = Math.sin(time * 1.8) * 0.5;
+      cat.head.rotation.z = Math.sin(time * 0.7) * 0.08;
+      cat.root.position.y = 0.67 + catHop;
+
+      // 행인은 가끔 왼쪽에서 오른쪽으로 지나간다
+      if (time > walkAt) {
+        const x = -17 + (time - walkAt) * 1.7;
+        const swing = Math.sin(time * 6.5) * 0.55;
+        walker.root.position.set(x, Math.abs(Math.sin(time * 6.5)) * 0.05, 4.2);
+        walker.legL.rotation.z = swing;
+        walker.legR.rotation.z = -swing;
+        if (x > 17) walkAt = time + 14;
+      }
+
+      flakes.forEach((flake, i) => {
+        flake.y -= flake.speed * dt;
+        if (flake.y < 0) flake.y += 13;
+        flakeMatrix.makeTranslation(flake.x + Math.sin(time * 0.8 + i) * 0.35, flake.y, flake.z);
+        snow.setMatrixAt(i, flakeMatrix);
+      });
+      snow.instanceMatrix.needsUpdate = true;
+    }
+
     steam.forEach((puff, i) => {
       const fromBowl = bowlSteam !== null && i % 3 === 0;
       const origin = fromBowl ? bowlSteam! : POT;
@@ -468,15 +531,6 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     const w = window.innerWidth;
     const h = window.innerHeight;
     camera.setViewOffset(w, h, cam.shift * w, 0, w, h);
-
-    // 말풍선을 주인장 머리 위에 붙인다
-    if (!bubble.hidden) {
-      owner.anchor.getWorldPosition(projected).project(camera);
-      const half = Math.min(170, w / 2 - 8);
-      const x = Math.min(Math.max(((projected.x + 1) / 2) * w, half + 8), w - half - 8);
-      const y = Math.max(((1 - projected.y) / 2) * h - 12, 72);
-      bubble.style.transform = `translate(calc(${Math.round(x)}px - 50%), calc(${Math.round(y)}px - 100%))`;
-    }
 
     renderer.render(scene, camera);
   }

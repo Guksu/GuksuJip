@@ -1,0 +1,89 @@
+/* 화면 아래의 대화창 — 초상화와 말 */
+.dialogue {
+  position: absolute;
+  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
+  left: var(--space-6);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-4);
+  width: min(520px, calc(100vw - var(--space-12)));
+  min-height: 112px;
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+  border: var(--px-border);
+  background: var(--color-surface);
+  box-shadow: var(--px-shadow);
+  pointer-events: none;
+  transition:
+    opacity var(--motion-duration-fast) var(--motion-ease-out),
+    visibility 0s;
+}
+
+.dialogue[data-show='false'] {
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity var(--motion-duration-fast) var(--motion-ease-out),
+    visibility 0s var(--motion-duration-fast);
+}
+
+.portrait {
+  width: 72px;
+  height: 72px;
+  border: var(--px-border);
+  background: var(--color-paper);
+  image-rendering: pixelated;
+}
+
+.body {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  color: var(--color-accent-text);
+}
+
+.text {
+  font-family: var(--font-display);
+  /* 줄을 나눠 쓴 말은 그대로 나눈다 */
+  white-space: pre-line;
+}
+
+.rest {
+  visibility: hidden;
+}
+
+/* 차림표가 오른쪽에 놓이는 넓은 화면에서는 차림표와 겹치지 않게 한다 */
+@media (min-width: 900px) {
+  .dialogue {
+    width: min(520px, calc(100vw - 400px - clamp(var(--space-4), 5vw, 80px) - var(--space-12)));
+  }
+}
+
+/* 좁은 화면 — 아래는 차림표 자리라 대화창은 위로 올린다 */
+@media (max-width: 899px) {
+  .dialogue {
+    top: calc(var(--tap-min) + var(--space-2));
+    right: var(--space-2);
+    bottom: auto;
+    left: var(--space-2);
+    width: auto;
+    min-height: 0;
+  }
+
+  .portrait {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* 대화창은 페이드만 하므로 동작 줄이기에서도 그대로 두되, 바로 바뀌게 한다 */
+@media (prefers-reduced-motion: reduce) {
+  .dialogue,
+  .dialogue[data-show='false'] {
+    transition: none;
+  }
+}
