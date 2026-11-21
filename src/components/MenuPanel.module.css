@@ -136,7 +136,7 @@
 }
 
 /* 좁은 화면 — 차림표가 아래에서 올라오고, 위로는 주인장이 보인다 */
-@media (max-width: 899px) {
+@media (max-width: 899px) and (orientation: portrait) {
   .menu {
     top: auto;
     right: var(--space-2);
@@ -160,7 +160,7 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) and (min-width: 900px) {
+@media (prefers-reduced-motion: reduce) and (min-width: 900px), (prefers-reduced-motion: reduce) and (orientation: landscape) {
   .menu,
   .menu[data-show='false'] {
     transform: translateY(-50%);

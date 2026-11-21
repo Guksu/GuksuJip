@@ -56,6 +56,8 @@ interface View {
   look: THREE.Vector3;
   /** 화면을 왼쪽으로 미는 정도(오른쪽에 패널이 놓일 때) */
   shift: number;
+  /** 화면을 위로 올리는 정도(아래에 패널이 놓일 때) */
+  rise: number;
 }
 
 /** 다 본 그릇이 놓일 자리. 차림표 순서대로 카운터 안쪽에 줄지어 놓는다 */
@@ -167,22 +169,26 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   };
 
   // ── 카메라 ──
-  const wide = () => window.innerWidth >= 900;
+  /** 패널을 옆에 놓는 화면인지. 폭이 좁고 세로로 긴 화면에서는 패널이 아래에 놓인다(CSS와 같은 기준) */
+  const wide = () => window.innerWidth >= 900 || window.innerWidth > window.innerHeight;
   const outsideView = (): View => {
     const aspect = window.innerWidth / window.innerHeight;
-    const dist = Math.max(12.5, 6.6 / (Math.tan((camera.fov * Math.PI) / 360) * aspect));
-    return { pos: new THREE.Vector3(0, 2.7, dist), look: new THREE.Vector3(0, 2.6, 0), shift: 0 };
+    // 세로로 긴 화면에서는 처마 끝이 조금 잘리더라도 가게가 크게 보이게 다가간다
+    const halfWidth = aspect < 1 ? 5.3 : 6.6;
+    const dist = Math.max(12.5, halfWidth / (Math.tan((camera.fov * Math.PI) / 360) * aspect));
+    return { pos: new THREE.Vector3(0, 2.7, dist), look: new THREE.Vector3(0, 2.6, 0), shift: 0, rise: 0 };
   };
+  // 좁은 화면에서는 아래쪽을 차림표(58%)나 소개(70%)가 덮으므로, 장면을 그만큼 위로 올려 남은 자리 가운데에 둔다
   const insideView = (withPanel: boolean): View => ({
     pos: new THREE.Vector3(0, 2.55, wide() ? -0.6 : 0.6),
-    look: new THREE.Vector3(0, wide() ? 2.2 : 1.5, -6.4),
+    look: new THREE.Vector3(0, 2.2, -6.4),
     shift: withPanel && wide() ? 0.2 : 0,
+    rise: withPanel && !wide() ? 0.15 : 0,
   });
-  const servedView = (): View => ({
-    pos: new THREE.Vector3(0, wide() ? 2.7 : 2.9, wide() ? -1.8 : -1.5),
-    look: new THREE.Vector3(0, wide() ? 2.0 : 0.6, -5.2),
-    shift: wide() ? 0.25 : 0,
-  });
+  const servedView = (): View =>
+    wide()
+      ? { pos: new THREE.Vector3(0, 2.7, -1.8), look: new THREE.Vector3(0, 2.0, -5.2), shift: 0.25, rise: 0 }
+      : { pos: new THREE.Vector3(0, 2.6, -0.9), look: new THREE.Vector3(0, 1.75, -5.0), shift: 0, rise: 0.33 };
   const viewOf = (p: Phase): View | null =>
     p === 'outside' ? outsideView() : p === 'menu' ? insideView(true) : p === 'served' ? servedView() : null;
 
@@ -191,15 +197,17 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     cam.pos.copy(to.pos);
     cam.look.copy(to.look);
     cam.shift = to.shift;
+    cam.rise = to.rise;
   };
   const moveCamera = (to: View, seconds: number) => {
-    const from = { pos: cam.pos.clone(), look: cam.look.clone(), shift: cam.shift };
+    const from = { pos: cam.pos.clone(), look: cam.look.clone(), shift: cam.shift, rise: cam.rise };
     return tweens.run(
       T(seconds),
       (k) => {
         cam.pos.lerpVectors(from.pos, to.pos, k);
         cam.look.lerpVectors(from.look, to.look, k);
         cam.shift = lerp(from.shift, to.shift, k);
+        cam.rise = lerp(from.rise, to.rise, k);
       },
       easeInOut,
     );
@@ -417,8 +425,11 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   };
   const hitsCat = () => raycaster.intersectObject(cat.root, true).length > 0;
   const onPointerMove = (event: PointerEvent) => {
-    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-    pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+    // 손가락으로 누를 때마다 화면이 튀지 않게, 카메라는 마우스만 따라간다
+    if (event.pointerType === 'mouse') {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+    }
     if (phase !== 'outside') return;
     overDoor = hitsDoor(event);
     canvas.style.cursor = overDoor || hitsCat() ? 'pointer' : '';
@@ -435,7 +446,7 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     const w = window.innerWidth;
     const h = window.innerHeight;
     // 화면을 작게 그린 뒤 늘려서 픽셀이 보이게 한다
-    const px = w >= 900 ? 3 : 2;
+    const px = Math.min(w, h) >= 600 ? 3 : 2;
     renderer.setPixelRatio(1);
     renderer.setSize(Math.ceil(w / px), Math.ceil(h / px), false);
     camera.aspect = w / h;
@@ -530,7 +541,7 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
     camera.lookAt(cam.look);
     const w = window.innerWidth;
     const h = window.innerHeight;
-    camera.setViewOffset(w, h, cam.shift * w, 0, w, h);
+    camera.setViewOffset(w, h, cam.shift * w, cam.rise * h, w, h);
 
     renderer.render(scene, camera);
   }

@@ -79,7 +79,7 @@
 }
 
 /* 좁은 화면 — 위로 그릇이 보이고, 소개는 아래에서 올라온다 */
-@media (max-width: 899px) {
+@media (max-width: 899px) and (orientation: portrait) {
   .detail {
     top: 30dvh;
     right: var(--space-2);

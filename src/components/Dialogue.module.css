@@ -1,8 +1,8 @@
 /* 화면 아래의 대화창 — 초상화와 말 */
 .dialogue {
   position: absolute;
-  bottom: calc(var(--space-6) + env(safe-area-inset-bottom));
-  left: var(--space-6);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  left: var(--space-4);
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -57,16 +57,16 @@
 }
 
 /* 차림표가 오른쪽에 놓이는 넓은 화면에서는 차림표와 겹치지 않게 한다 */
-@media (min-width: 900px) {
+@media (min-width: 900px), (orientation: landscape) {
   .dialogue {
     width: min(520px, calc(100vw - 400px - clamp(var(--space-4), 5vw, 80px) - var(--space-12)));
   }
 }
 
 /* 좁은 화면 — 아래는 차림표 자리라 대화창은 위로 올린다 */
-@media (max-width: 899px) {
+@media (max-width: 899px) and (orientation: portrait) {
   .dialogue {
-    top: calc(var(--tap-min) + var(--space-2));
+    top: calc(var(--tap-min) + var(--space-2) + env(safe-area-inset-top));
     right: var(--space-2);
     bottom: auto;
     left: var(--space-2);

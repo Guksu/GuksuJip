@@ -85,8 +85,19 @@
   text-shadow: 2px 2px 0 var(--color-night);
 }
 
+/* 가로로 눕힌 휴대폰처럼 낮은 화면 — 가게 문을 가리지 않게 로고와 메뉴를 왼쪽으로 붙인다 */
 @media (max-height: 560px) {
+  .title {
+    justify-items: start;
+    padding-top: var(--space-4);
+    text-align: left;
+  }
+
   .logo {
     font-size: 48px;
+  }
+
+  .foot {
+    display: none;
   }
 }
