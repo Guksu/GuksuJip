@@ -1,0 +1,8 @@
+/* 픽셀 글꼴 Galmuri11(SIL OFL). 패키지의 CSS는 쓰지 않는 굵기와 크기까지 불러서 필요한 것만 적는다. */
+@font-face {
+  font-family: 'Galmuri11';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../node_modules/galmuri/dist/Galmuri11.woff2') format('woff2');
+}

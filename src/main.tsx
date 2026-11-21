@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
-import '@fontsource/do-hyeon/400.css';
+import './styles/fonts.css';
 import './styles/tokens.css';
 import './styles/global.css';
 import { App } from './App';

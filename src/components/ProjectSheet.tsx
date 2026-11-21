@@ -20,8 +20,7 @@ function ArrowOut() {
   );
 }
 
-/** 프로젝트 소개. 그릇 옆(좁은 화면에서는 아래)에 놓이는 종이 한 장.
- *  종류·재료·저장소 공개 여부 같은 사실은 상 위의 주문서가 맡고, 여기서는 무엇을 만들었는지를 화면과 글로 보여 준다. */
+/** 프로젝트 소개. 소개 패널 안에 놓이는 본문으로, 무엇을 만들었는지를 화면과 글로 보여 준다. */
 export function ProjectSheet({ item, prev, next, onMove, titleRef }: ProjectSheetProps) {
   const category = categories.find((c) => c.id === item.category);
   const [primary, ...others] = item.links;

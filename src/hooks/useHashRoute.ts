@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { withViewTransition } from '../lib/viewTransition';
 
 const PREFIX = '#/menu/';
 
@@ -16,8 +15,7 @@ export function toHash(slug: string | null): string {
 }
 
 /** 주소의 해시로 지금 고른 메뉴를 알려 주고, go로 주소와 화면을 함께 바꾼다.
- *  GitHub Pages는 서버 라우팅이 없어서 해시 주소를 쓴다.
- *  화면이 바뀔 때는 View Transition으로 감싸서, 뒤로 가기에도 같은 전환이 일어난다. */
+ *  GitHub Pages는 서버 라우팅이 없어서 해시 주소를 쓴다. 뒤로 가기에도 같은 길로 화면이 바뀐다. */
 export function useHashRoute(): { slug: string | null; go: (slug: string | null) => void } {
   const [slug, setSlug] = useState<string | null>(() => parseHash(window.location.hash));
   const current = useRef(slug);
@@ -25,7 +23,7 @@ export function useHashRoute(): { slug: string | null; go: (slug: string | null)
   const show = useCallback((next: string | null) => {
     if (next === current.current) return;
     current.current = next;
-    withViewTransition(() => setSlug(next));
+    setSlug(next);
   }, []);
 
   // 뒤로·앞으로 가기, 주소창에서 해시를 직접 고친 경우

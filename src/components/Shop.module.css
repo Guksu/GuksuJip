@@ -1,0 +1,130 @@
+.shop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* 장면은 작게 그린 뒤 늘려서 픽셀이 보이게 한다 */
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* ── 가게 앞 ── */
+.outside {
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+  left: 0;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding-inline: var(--page-inline);
+  pointer-events: none;
+}
+
+.hint {
+  font-family: var(--font-display);
+  color: var(--color-on-night);
+  text-align: center;
+  text-shadow: 2px 2px 0 var(--color-night);
+}
+
+.outsideActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  pointer-events: auto;
+}
+
+.enter {
+  min-height: var(--control-height);
+  padding: 0 var(--space-6);
+  border: var(--px-border);
+  background: var(--color-accent);
+  box-shadow: var(--px-shadow);
+  color: var(--color-on-accent);
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: transform var(--motion-duration-instant) var(--motion-ease-out);
+}
+
+.enter:active {
+  transform: translate(2px, 2px);
+}
+
+.ghost,
+.skip {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--color-on-night);
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-shadow: 2px 2px 0 var(--color-night);
+  cursor: pointer;
+}
+
+.shop :is(.enter, .ghost, .skip):focus-visible {
+  outline-color: var(--color-on-night);
+}
+
+/* ── 연출 건너뛰기 ── */
+.skip {
+  position: absolute;
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+}
+
+/* ── 주인장 말풍선. 자리는 장면이 매 프레임 옮긴다 ── */
+.bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(320px, calc(100vw - var(--space-4)));
+  padding: var(--space-3) var(--space-4);
+  border: var(--px-border);
+  background: var(--color-surface);
+  box-shadow: var(--px-shadow);
+  font-family: var(--font-display);
+  /* 줄을 나눠 쓴 말은 그대로 나누고, 긴 말은 줄 길이를 고르게 맞춘다 */
+  white-space: pre-line;
+  text-wrap: balance;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* 아직 안 찍힌 글 — 자리만 차지한다 */
+.rest {
+  visibility: hidden;
+}
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-right: var(--px-border);
+  border-bottom: var(--px-border);
+  background: var(--color-surface);
+  transform: translateY(-4px) rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter:active {
+    transform: none;
+  }
+}

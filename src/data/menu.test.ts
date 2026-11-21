@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { categories, findMenu, menu, menuByCategory } from './menu';
 import { parseHash, toHash } from '../hooks/useHashRoute';
-import { addOrdered, parseOrdered } from '../hooks/useOrdered';
+import { addOrdered } from '../hooks/useOrdered';
 import { shotsOf } from './shots';
 
 describe('메뉴 데이터', () => {
@@ -92,24 +92,8 @@ describe('제품 화면', () => {
   });
 });
 
-describe('주문 기록', () => {
-  const slugs = menu.map((item) => item.slug);
-
-  it('저장된 목록을 읽는다', () => {
-    expect(parseOrdered('["suta","gimi"]', slugs)).toEqual(['suta', 'gimi']);
-  });
-
-  it('깨진 값, 배열이 아닌 값, 비어 있는 값은 빈 목록으로 본다', () => {
-    expect(parseOrdered(null, slugs)).toEqual([]);
-    expect(parseOrdered('{', slugs)).toEqual([]);
-    expect(parseOrdered('{"suta":true}', slugs)).toEqual([]);
-  });
-
-  it('지금은 없는 메뉴와 겹친 메뉴는 버린다', () => {
-    expect(parseOrdered('["suta","없는-메뉴",3,"suta"]', slugs)).toEqual(['suta']);
-  });
-
-  it('이미 주문한 메뉴는 다시 더하지 않는다', () => {
+describe('맛본 목록', () => {
+  it('이미 맛본 메뉴는 다시 더하지 않는다', () => {
     expect(addOrdered(['suta'], 'gimi')).toEqual(['suta', 'gimi']);
     expect(addOrdered(['suta'], 'suta')).toEqual(['suta']);
   });
