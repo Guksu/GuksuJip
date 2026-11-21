@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MenuItem } from '../data/menu';
+import { Sound } from '../lib/sound';
 import type { Phase, Stage } from '../scene/stage';
 import { CheckDialog } from './CheckDialog';
 import { DetailPanel } from './DetailPanel';
 import { MenuPanel } from './MenuPanel';
+import { TitleScreen } from './TitleScreen';
 import styles from './Shop.module.css';
 
 /** 말풍선 글을 한 글자씩 찍는다. 찍힌 글과 아직 안 찍힌 글을 나눠 돌려준다.
  *  안 찍힌 글도 자리를 차지하게 두면, 찍히는 동안 줄바꿈과 말풍선 크기가 바뀌지 않는다 */
-function useTyped(line: string | null, instant: boolean): [string, string] {
+function useTyped(line: string | null, instant: boolean, onChar: () => void): [string, string] {
   const [count, setCount] = useState(0);
   const chars = line ? [...line] : [];
   const total = chars.length;
@@ -16,9 +18,16 @@ function useTyped(line: string | null, instant: boolean): [string, string] {
   useEffect(() => {
     if (instant || total === 0) return;
     setCount(0);
-    const timer = window.setInterval(() => setCount((n) => (n >= total ? n : n + 1)), 28);
+    let typed = 0;
+    const timer = window.setInterval(() => {
+      if (typed >= total) return;
+      typed += 1;
+      setCount(typed);
+      // 두 글자에 한 번 말소리를 낸다
+      if (typed % 2 === 1) onChar();
+    }, 28);
     return () => window.clearInterval(timer);
-  }, [line, instant, total]);
+  }, [line, instant, total, onChar]);
 
   if (instant) return [line ?? '', ''];
   return [chars.slice(0, count).join(''), chars.slice(count).join('')];
@@ -48,8 +57,34 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
   const lastItem = useRef(item);
   if (item) lastItem.current = item;
 
+  const [sound] = useState(() => new Sound());
+  const [soundOn, setSoundOn] = useState(false);
+  const talk = useCallback(() => sound.play('talk'), [sound]);
+
   const phase: Phase = failed ? (item ? 'served' : 'menu') : scenePhase;
-  const [typed, rest] = useTyped(line, reduceMotion);
+  const [typed, rest] = useTyped(line, reduceMotion, talk);
+
+  useEffect(() => () => sound.dispose(), [sound]);
+
+  // 장면이 넘어갈 때마다 그에 맞는 소리를 낸다
+  const prevPhase = useRef(phase);
+  useEffect(() => {
+    const prev = prevPhase.current;
+    prevPhase.current = phase;
+    if (phase === prev) return;
+    if (phase === 'entering' && prev === 'outside') sound.play('door');
+    if (phase === 'cooking') sound.play('select');
+    if (phase === 'served') sound.play('serve');
+    if (phase === 'menu' && prev === 'served') sound.play('back');
+    sound.setBoiling(phase === 'cooking');
+  }, [phase, sound]);
+
+  const toggleSound = useCallback(() => {
+    const next = !sound.enabled;
+    sound.setEnabled(next);
+    setSoundOn(next);
+    if (next) sound.play('select');
+  }, [sound]);
 
   // 장면은 three.js가 커서 따로 내려받는다
   useEffect(() => {
@@ -99,27 +134,33 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
     stage?.setTasted(ordered);
   }, [stage, ordered]);
 
-  const point = useCallback((target: MenuItem) => setLine(`${target.dish}!\n${target.tagline}`), []);
+  const point = useCallback(
+    (target: MenuItem) => {
+      setLine(`${target.name}!\n${target.tagline}`);
+      sound.play('tick');
+    },
+    [sound],
+  );
   const busy = phase === 'entering' || phase === 'greeting' || phase === 'cooking';
   const shown = item ?? lastItem.current;
 
   return (
     <main className={styles.shop}>
       <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
-      {phase !== 'served' && <h1 className="sr-only">국수집, 김종민의 프로젝트 차림표</h1>}
-
       {phase === 'outside' && (stage || failed) && (
-        <div className={styles.outside}>
-          <p className={styles.hint}>문을 눌러 가게로 들어가세요</p>
-          <div className={styles.outsideActions}>
-            <button type="button" className={styles.enter} onClick={() => stage?.enter()}>
-              들어가기
-            </button>
-            <button type="button" className={styles.ghost} onClick={() => stage?.skipToMenu()}>
-              차림표 바로 보기
-            </button>
-          </div>
-        </div>
+        <TitleScreen
+          soundOn={soundOn}
+          onStart={() => stage?.enter()}
+          onSkip={() => stage?.skipToMenu()}
+          onToggleSound={toggleSound}
+          onMove={() => sound.play('tick')}
+        />
+      )}
+      {phase !== 'outside' && phase !== 'served' && <h1 className="sr-only">국수집, 김종민의 프로젝트 차림표</h1>}
+      {phase !== 'outside' && (
+        <button type="button" className={styles.sound} aria-pressed={soundOn} onClick={toggleSound}>
+          소리 {soundOn ? '켜짐' : '꺼짐'}
+        </button>
       )}
 
       {/* 말풍선은 한 글자씩 찍히므로 읽어 주는 글은 따로 한 번에 둔다 */}

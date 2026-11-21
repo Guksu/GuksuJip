@@ -340,7 +340,7 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
 
     void set('x', 0, 0.45, easeInOut);
     await set('turn', 0, 0.45, easeInOut);
-    say(`${item.dish} 나왔어요!`);
+    say(`${item.name} 나왔어요!`);
     const bowl = place(item);
     chopsticks.visible = false;
     const from = new THREE.Vector3(0, 1.85, -5.75);
@@ -415,7 +415,7 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   onResize();
 
   // ── 그리기 ──
-  const clock = new THREE.Clock();
+  let last = performance.now();
   const projected = new THREE.Vector3();
   let time = 0;
   let sway = 0;
@@ -461,7 +461,9 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
 
     // 카메라 — 포인터를 따라 살짝 움직여 깊이가 보이게 한다
     const drift = reduceMotion ? 0 : 1;
-    camera.position.set(cam.pos.x + pointer.x * 0.3 * drift, cam.pos.y - pointer.y * 0.15 * drift, cam.pos.z);
+    // 가게 앞(타이틀)에서는 가만히 있어도 화면이 천천히 흘러간다
+    const idle = phase === 'outside' ? Math.sin(time * 0.25) * 0.7 * drift : 0;
+    camera.position.set(cam.pos.x + idle + pointer.x * 0.3 * drift, cam.pos.y - pointer.y * 0.15 * drift, cam.pos.z);
     camera.lookAt(cam.look);
     const w = window.innerWidth;
     const h = window.innerHeight;
@@ -480,7 +482,9 @@ export async function createStage(opts: StageOptions): Promise<Stage> {
   }
 
   const frame = () => {
-    tick(Math.min(clock.getDelta(), 0.05));
+    const now = performance.now();
+    tick(Math.min((now - last) / 1000, 0.05));
+    last = now;
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
