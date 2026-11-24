@@ -1,0 +1,163 @@
+/* 가게 안에서 늘 보이는 표시. 먹색 판에 종이색 글씨로, 밝은 가게 안에서도 읽히게 한다 */
+.hud {
+  position: absolute;
+  top: calc(var(--space-3) + env(safe-area-inset-top));
+  left: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: min(420px, calc(100vw - var(--space-6)));
+  font-family: var(--font-display);
+  font-size: var(--text-small);
+  color: var(--ui-paper);
+}
+
+.plate,
+.chip,
+.objective,
+.toast {
+  border: var(--ui-frame);
+  background: var(--ui-ink);
+  box-shadow: var(--ui-frame-line), var(--px-shadow);
+}
+
+.plate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+}
+
+.label {
+  margin-right: var(--space-2);
+  color: var(--ui-dim);
+}
+
+.plate .label {
+  margin-right: 0;
+}
+
+.pips {
+  display: flex;
+  gap: 3px;
+}
+
+/* 그릇 한 칸. 맛보면 종이색으로 찬다 */
+.pip {
+  width: 8px;
+  height: 8px;
+  background: var(--ui-ink-raised);
+}
+
+.pip[data-on='true'] {
+  background: var(--ui-paper);
+}
+
+.count {
+  font-size: var(--text-body);
+}
+
+.total {
+  color: var(--ui-dim);
+  font-size: var(--text-small);
+}
+
+.chip {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.chip:active {
+  transform: translate(2px, 2px);
+}
+
+.chip:focus-visible {
+  outline-color: var(--ui-paper);
+}
+
+@media (hover: hover) {
+  .chip:hover {
+    background: var(--ui-ink-raised);
+  }
+}
+
+.objective {
+  flex-basis: 100%;
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* 새로 맛본 국수 알림. 위에서 내려왔다가 사라진다 */
+.toast {
+  position: absolute;
+  top: calc(var(--space-3) + env(safe-area-inset-top));
+  left: 50%;
+  display: grid;
+  gap: 2px;
+  width: max-content;
+  max-width: calc(100vw - var(--space-8));
+  padding: var(--space-2) var(--space-4);
+  color: var(--ui-paper);
+  font-family: var(--font-display);
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition:
+    opacity var(--motion-duration-base) var(--motion-ease-out),
+    transform var(--motion-duration-base) var(--motion-ease-out),
+    visibility 0s;
+}
+
+.toast[data-show='false'] {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-50%) translateY(calc(var(--space-4) * -1));
+  transition:
+    opacity var(--motion-duration-fast) var(--motion-ease-out),
+    transform var(--motion-duration-fast) var(--motion-ease-out),
+    visibility 0s var(--motion-duration-fast);
+}
+
+.toastTitle {
+  font-size: var(--text-caption);
+  color: var(--ui-dim);
+}
+
+/* 좁은 화면 — 위쪽은 대화창 자리라 한 줄만 남기고, 알림은 그 아래로 내린다 */
+@media (max-width: 899px) and (orientation: portrait) {
+  .hud {
+    top: calc(var(--space-2) + env(safe-area-inset-top));
+    left: var(--space-2);
+  }
+
+  .plate .label,
+  .objective {
+    display: none;
+  }
+
+  .pips {
+    gap: 2px;
+  }
+
+  .pip {
+    width: 6px;
+  }
+
+  .toast {
+    top: calc(var(--tap-min) + var(--space-4) + env(safe-area-inset-top));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast[data-show='false'] {
+    transform: translateX(-50%);
+  }
+}

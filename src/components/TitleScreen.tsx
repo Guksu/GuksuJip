@@ -1,5 +1,4 @@
 import { useEffect, useRef, type KeyboardEvent } from 'react';
-import { owner } from '../data/owner';
 import styles from './TitleScreen.module.css';
 
 interface TitleScreenProps {
@@ -34,7 +33,7 @@ export function TitleScreen({ soundOn, onStart, onSkip, onToggleSound, onMove }:
       <div className={styles.head}>
         <h1 className={styles.logo}>국수집</h1>
         <p className={styles.sub}>
-          {owner.name}({owner.handle})의 프로젝트 차림표
+          개발자 국수가게에 오신걸 환영합니다.
         </p>
       </div>
 
@@ -46,7 +45,7 @@ export function TitleScreen({ soundOn, onStart, onSkip, onToggleSound, onMove }:
         </li>
         <li>
           <button type="button" className={styles.item} onClick={onSkip} onFocus={onMove} onPointerEnter={onMove}>
-            차림표 바로 보기
+            차림 바로 보기
           </button>
         </li>
         <li>

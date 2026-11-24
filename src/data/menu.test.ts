@@ -3,6 +3,7 @@ import { categories, findMenu, menu, menuByCategory } from './menu';
 import { parseHash, toHash } from '../hooks/useHashRoute';
 import { addOrdered } from '../hooks/useOrdered';
 import { shotsOf } from './shots';
+import { COOKED_SLUGS, RECIPES, recipeOf } from '../pixel/recipes';
 
 describe('메뉴 데이터', () => {
   it('주소 이름(slug)이 겹치지 않는다', () => {
@@ -96,5 +97,17 @@ describe('맛본 목록', () => {
   it('이미 맛본 메뉴는 다시 더하지 않는다', () => {
     expect(addOrdered(['suta'], 'gimi')).toEqual(['suta', 'gimi']);
     expect(addOrdered(['suta'], 'suta')).toEqual(['suta']);
+  });
+});
+
+describe('만드는 장면', () => {
+  it('만드는 방식을 정한 메뉴는 모두 실제로 있는 메뉴다', () => {
+    for (const slug of COOKED_SLUGS) expect(findMenu(slug), slug).toBeDefined();
+  });
+
+  it('모든 메뉴가 세 컷짜리 장면을 가지고, 세 가지 방식이 다 쓰인다', () => {
+    const kinds = new Set(menu.map((item) => recipeOf(item.slug)));
+    expect(kinds.size).toBe(Object.keys(RECIPES).length);
+    for (const item of menu) expect(RECIPES[recipeOf(item.slug)]).toHaveLength(3);
   });
 });

@@ -18,7 +18,7 @@ const ROWS = [
 const COLORS: Record<string, string> = {
   h: '#1c1917', // 머리카락
   w: '#f6f2e8', // 머리띠
-  r: '#b23a26',
+  r: '#2f3f7a',
   s: '#dba27c', // 살
   b: '#1c1917', // 눈썹
   e: '#1c1917', // 눈
@@ -56,6 +56,7 @@ export function Dialogue({ show, typed, rest }: DialogueProps) {
           {typed}
           <span className={styles.rest}>{rest}</span>
         </p>
+        {rest === '' && <span className={styles.more}>▼</span>}
       </div>
     </div>
   );

@@ -53,6 +53,30 @@
   height: 20px;
 }
 
+/* 자판 안내. 자판이 없는 화면에서는 숨긴다 */
+.keyHint {
+  display: none;
+  margin-right: auto;
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+.keyHint kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0 var(--space-1);
+  border: 2px solid currentColor;
+  font-family: inherit;
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) {
+  .keyHint {
+    display: block;
+  }
+}
+
 .dish {
   font-family: var(--font-display);
   font-size: var(--text-small);

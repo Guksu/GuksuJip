@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MenuItem } from '../data/menu';
+import { menu, type MenuItem } from '../data/menu';
 import { Sound } from '../lib/sound';
-import type { Phase, Stage } from '../scene/stage';
+import type { Phase, Stage } from '../pixel/stage';
 import { CheckDialog } from './CheckDialog';
 import { DetailPanel } from './DetailPanel';
+import { Hud } from './Hud';
 import { Dialogue } from './Dialogue';
-import { MenuPanel } from './MenuPanel';
+import { MenuBoard } from './MenuBoard';
 import { TitleScreen } from './TitleScreen';
 import styles from './Shop.module.css';
 
@@ -90,7 +91,7 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
   useEffect(() => {
     let live = true;
     let created: Stage | null = null;
-    import('../scene/stage')
+    import('../pixel/stage')
       .then(({ createStage }) =>
         createStage({
           canvas: canvasRef.current!,
@@ -136,11 +137,39 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
 
   const point = useCallback(
     (target: MenuItem) => {
-      setLine(`${target.name}!\n${target.tagline}`);
+      setLine(`${target.dish}, ${target.name}.\n${target.tagline}`);
       sound.play('tick');
     },
     [sound],
   );
+  // 새로 맛본 국수는 잠깐 알림으로 띄운다
+  const [toast, setToast] = useState<{ dish: string; name: string } | null>(null);
+  const tastedCount = useRef(ordered.length);
+  useEffect(() => {
+    const grew = ordered.length > tastedCount.current;
+    tastedCount.current = ordered.length;
+    const latest = menu.find((entry) => entry.slug === ordered[ordered.length - 1]);
+    if (!grew || !latest) return;
+    setToast({ dish: latest.dish, name: latest.name });
+    const timer = window.setTimeout(() => setToast(null), 2800);
+    return () => window.clearTimeout(timer);
+  }, [ordered]);
+
+  // 지금 할 일. 장면이 넘어갈 때마다 바뀐다
+  const left = menu.length - ordered.length;
+  const objective =
+    phase === 'entering' || phase === 'greeting'
+      ? '주인장 인사 듣기'
+      : phase === 'cooking'
+        ? '국수 기다리기'
+        : phase === 'served'
+          ? '소개 읽기'
+          : ordered.length === 0
+            ? '오늘의 차림에서 국수 주문하기'
+            : left > 0
+              ? `남은 국수 ${left}그릇`
+              : '계산서 받기';
+
   const busy = phase === 'entering' || phase === 'greeting' || phase === 'cooking';
   const shown = item ?? lastItem.current;
 
@@ -157,11 +186,7 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
         />
       )}
       {phase !== 'outside' && phase !== 'served' && <h1 className="sr-only">국수집, 김종민의 프로젝트 차림표</h1>}
-      {phase !== 'outside' && (
-        <button type="button" className={styles.sound} aria-pressed={soundOn} onClick={toggleSound}>
-          소리 {soundOn ? '켜짐' : '꺼짐'}
-        </button>
-      )}
+      {phase !== 'outside' && <Hud ordered={ordered} objective={objective} toast={toast} soundOn={soundOn} onToggleSound={toggleSound} />}
 
       {/* 대화창은 한 글자씩 찍히므로 읽어 주는 글은 따로 한 번에 둔다 */}
       <Dialogue show={line !== null && !failed && phase !== 'outside' && phase !== 'served'} typed={typed} rest={rest} />
@@ -175,7 +200,7 @@ export function Shop({ item, ordered, onOrder, onClose, onClear }: ShopProps) {
         </button>
       )}
 
-      <MenuPanel
+      <MenuBoard
         show={phase === 'menu'}
         ordered={ordered}
         last={lastItem.current?.slug ?? null}
